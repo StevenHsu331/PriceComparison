@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        {% load staticfiles %}
+        <script src="{% static 'jquery-3.4.1.js' %}"></script>
+        <script src="{% static 'Scripts/umd/popper.min.js' %}"></script>
+        <script src="{% static 'Scripts/bootstrap.min.js' %}"></script>
+        <link href="{% static 'Content/bootstrap.css' %}" rel="stylesheet" />
+        <link href="{% static 'fontawesome/css/all.min.css' %}" rel="stylesheet" />
+        <link href="{% static 'Content/outlook.css' %}" rel="stylesheet" />
+        <meta charset="utf-8">
+        <title>PriceComparison</title>
+    </head>
+    <body>
+        <div class="container-fluid" id="main">
+            <div id="head" class="row align-items-center justify-content-center">
+                <div class="col-12 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                    <h2>大賣場比價網站</h2>
+                </div>
+            </div>
+            <div id="body" class="row ">
+                <div id="list" class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                    <span>購物清單<i class="far fa-sticky-note"></i></span>
+                    <table id="list_table" style="display: none;" class="table table-striped table-light">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">名稱</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button id="search_list" type="button" style="display: none; width: 100%;" class="btn btn-outline-light justify-content-center">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div id="main_section" class="col-12 col-sm-9 col-md-9 col-lg-9 col-xl-9">
+                    <div id="function_section" class="row function_section">
+                        <div id="function_col" class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-4 align-self-center">
+                            <div class="row justify-content-center">
+                                <label class="col" id="method">
+                                    查詢依據
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-lg-6">
+                                    <label>cp值</label>
+                                    <input name="method" value="cp_val" type="radio">
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-lg-6">
+                                    <label>價格</label>
+                                    <input name="method" value="product_price" type="radio">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="function_col" class="col-12 col-sm-6 col-md-6 col-lg-3 col-lg-3 align-self-center">
+                            <div class="row justify-content-center">
+                                <label class="col" id="amount">
+                                    結果顯示數量
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="dropdown show">
+                                        <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            請選擇
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#">1</a>
+                                            <a class="dropdown-item" href="#">3</a>
+                                            <a class="dropdown-item" href="#">5</a>
+                                            <a class="dropdown-item" href="#">10</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="function_col" class="col-12 col-sm-6 col-md-6 col-lg-4 col-lg-4 align-self-center">
+                            <div class="row">
+                                <label class="col" id="order">
+                                    排序方式
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-lg-6">
+                                    <label>高到低</label>
+                                    <input name="order" value="desc" type="radio">
+                                </div>
+                                <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-lg-6">
+                                    <label>低到高</label>
+                                    <input name="order" value="asc" type="radio">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="search_section" class="row search_section">
+                        <div class="col-12 col-sm-10 col-md-10 col-lg-10 col-lg-10">
+                            <div class="input-group input-group">
+                                <input type="text" id="search" class="form-control" placeholder="search">
+                                <div class="input-group-btn">
+                                    <button id="add_list_btn" type="button" class="btn btn-outline-light ">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="input-group-btn">
+                                    <button id="search_btn" type="button" class="btn btn-outline-light">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col">
+                                <table id="result_section_single" style="display: none;" class="table table-striped table-light">
+                                    <thead>
+                                        <tr>
+                                          <th scope="col">#</th>
+                                          <th scope="col">名稱</th>
+                                          <th scope="col">價格</th>
+                                          <th scope="col">賣場</th>
+                                          <th scope="col">規格</th>
+                                          <th scope="col">cp值</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <table id="result_section_multiple" style="display: none;" class="table table-striped table-light">
+                                    <thead>
+                                        <tr>
+                                          <th scope="col">#</th>
+                                          <th scope="col" colspan="3">大潤發</th>
+                                          <th scope="col" colspan="3">家樂福</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            var width = $(this).width();
+            var height = $(this).height();
+
+            $(this).ready(function(){
+                $("#list_table").attr("count", 0);
+            })
+
+            $(this).resize(function(){
+                if($(this).width() <= 576){
+                    $("#function_section").removeClass("function_section");
+                    $("#search_section").removeClass("search_section");
+                }
+                else if($(this).width() > width){
+                    $("#function_section").addClass("function_section");
+                    $("#search_section").addClass("search_section");
+                }
+
+                width = $(this).width();
+                height = $(this).height();
+            })
+    
+            $("#search_btn").click(function(){
+                $("#method").css("color", "#fff");
+                $("#amount").css("color", "#fff");
+                $("#order").css("color", "#fff");
+                $("#search").css("border-color", "#ced4da");
+                
+                if(varification()){
+                    var data = {
+                        "method" : $("input[name=method]:checked").val(),
+                        "amount" : $(".dropdown-toggle").text().trim(),
+                        "order" : $("input[name=order]:checked").val(),
+                        "key" : $("#search").val(),
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    }
+
+                    $.ajax({
+                        url: "/getResult",
+                        data: data,
+                        type: "post",
+                        success: function(result){
+                            $("#result_section_multiple").hide();
+                            $("#result_section_single").find("tbody").hide();
+                            $("#result_section_single").find("tbody").children().remove();
+                            $("#result_section_single").fadeIn();
+                            $("#result_section_single").find("tbody").fadeIn();
+                            result = JSON.parse(result);
+                            for(var i = 0; i < result.length; i++){
+                                createSingleTr(result[i], i+1);
+                            }
+                        }
+                    })
+                }
+            });
+
+            $("#search_list").click(function(){
+                if(listVarification()){
+                    var data = {
+                        "method" : $("input[name=method]:checked").val(),
+                        "amount" : 0,
+                        "order" : $("input[name=order]:checked").val(),
+                        "key" : $("#list_table").find(".dBtn").children(".key").map(function(){
+                                    return $.trim($(this).text());
+                                }).get().toString(),
+                        "csrfmiddlewaretoken": '{{ csrf_token }}'
+                    }
+                    console.log(data)
+                    $.ajax({
+                        url: "/getResult",
+                        data: data,
+                        type: "post",
+                        success: function(result){
+                            $("#result_section_single").hide();
+                            $("#result_section_multiple").find("tbody").hide();
+                            $("#result_section_multiple").find("tbody").children().remove();
+                            $("#result_section_multiple").fadeIn();
+                            $("#result_section_multiple").find("tbody").fadeIn();
+                            result = JSON.parse(result);
+                            for(var i = 0; i < result.length; i++){
+                                for(var j = 0; j < result[i].length; j++){
+                                    createMultipleTr(result[i][j], j+1, i);
+                                }
+                            }
+                            console.log(result);
+                        }
+                    })
+                }
+            })
+
+            $("#add_list_btn").click(function(){
+                $("#list_table").show();
+                $("#search_list").show();
+                addToList($("#search").val());
+            })
+
+            $("#search").keydown(function(event){
+                if(event.keyCode == 13){
+                    $("#search_btn").click();
+                }
+            })
+
+            $(".dropdown-item").click(function(){
+                $(".dropdown-toggle").text($(this).text());
+            });
+
+            function addToList(name){
+                var count = parseInt($("#list_table").attr("count"));
+                $("#list_table").find("tbody").append(`
+                    <tr class='dBtn'>
+                        <th scope='row' class='counter'>${count+1}</th>
+                        <td class='key'>${name}</td>
+                        <td><i class='fas fa-times remove_list'></i></td>
+                    </tr>
+                `)
+
+                $("#list_table").attr("count", count+1);
+                $(".remove_list").click(function(){
+                    var count = parseInt($("#list_table").attr("count"));
+                    var targetCount = parseInt($(this).parent("td").siblings(".counter").text());
+                    $("#list_table").attr("count", count-1)
+                    $(this).parents("tr").remove();
+
+                    var allCount = $(".counter");
+                    for(var i = 0; i < allCount.length; i++){
+                        var currentCount = parseInt($(allCount[i]).text());
+
+                        if(currentCount > targetCount){
+                            $(allCount[i]).text(currentCount - 1);
+                        }
+                    }
+
+                    if(count - 1 == 0){
+                        $("#list_table").hide();
+                        $("#search_list").hide();
+                    }
+                })
+            }
+
+            function createSingleTr(data, i){
+                $("#result_section_single").find("tbody").append(`
+                    <tr class='dBtn'>
+                        <th scope="row">${i}</th>
+                        <td>${data[0]}</td>
+                        <td>${data[1]}</td>
+                        <td>${data[3]}</td>
+                        <td>${data[6]}</td>
+                        <td>${data[4]}元${data[7]}</td>
+                    </tr>
+                `)
+            }
+
+            function createMultipleTr(data, i, position){
+                if(position){
+                    $("#result_section_multiple").find(`tr[count=${i}]`).append(`
+                        <th scope="row">${i}</th>
+                        <td>${data[0]}</td>
+                        <td>${data[1]}</td>
+                        <td>${data[2]}</td>
+                    `)
+                }
+                else{
+                    $("#result_section_multiple").find("tbody").append(`
+                        <tr class='dBtn' count=${i}>
+                            <th scope="row">${i}</th>
+                            <td>${data[0]}</td>
+                            <td>${data[1]}</td>
+                            <td>${data[2]}</td>
+                        </tr>
+                    `)
+                }
+            }
+
+            function listVarification(){
+                var status = true;
+
+                if(!$("input[name=method]:checked").val()){
+                    $("#method").css("color", "red");
+                    status = false;
+                }
+                if(!$("input[name=order]:checked").val()){
+                    $("#order").css("color", "red");
+                    status = false;
+                }
+                if(!$("#search").val()){
+                    $("#search").css("border-color", "red");
+                    status = false;
+                }
+
+                return status;
+            }
+
+            function varification(){
+                var status = true;
+
+                if($(".dropdown-toggle").text().trim() == "請選擇"){
+                    $("#amount").css("color", "red");
+                    status = false;
+                }
+                if(!$("input[name=method]:checked").val()){
+                    $("#method").css("color", "red");
+                    status = false;
+                }
+                if(!$("input[name=order]:checked").val()){
+                    $("#order").css("color", "red");
+                    status = false;
+                }
+                if(!$("#search").val()){
+                    $("#search").css("border-color", "red");
+                    status = false;
+                }
+
+                return status;
+            }
+
+        </script>
+    </body>
+</html>
